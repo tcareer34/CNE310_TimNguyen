@@ -115,10 +115,12 @@ def edit_profile():
     logged_in, first_name, no_of_items = get_login_details()
     with sqlite3.connect('database.db') as conn:
         cur = conn.cursor()
-        cur.execute("SELECT userId, email, first_name, lastName, address1, address2, zipcode, city, state, country, phone FROM users WHERE email = '" + session['email'] + "'")
+        cur.execute(
+            "SELECT userId, email, first_name, lastName, address1, address2, zipcode, city, state, country, phone FROM users WHERE email = '" + session['email'] + "'")
         profile_data = cur.fetchone()
     conn.close()
-    return render_template("editProfile.html", profileData=profile_data, loggedIn=logged_in, firstName=first_name, noOfItems=no_of_items)
+    return render_template ("editProfile.html", profileData=profile_data,
+loggedIn=logged_in, firstName=first_name, noOfItems=no_of_items)
 
 @app.route("/account/profile/changePassword", methods=["GET", "POST"])
 def change_password():
@@ -137,7 +139,7 @@ def change_password():
                 try:
                     cur.execute("UPDATE users SET password = ? WHERE userId = ?", (new_password, user_id))
                     conn.commit()
-                    msg="Changed successfully"
+                    msg = "Changed successfully"
                 except:
                     conn.rollback()
                     msg = "Failed"
@@ -163,26 +165,32 @@ def update_profile():
         country = request.form['country']
         phone = request.form['phone']
         with sqlite3.connect('database.db') as con:
-                try:
-                    cur = con.cursor()
-                    cur.execute('UPDATE users SET firstName = ?, lastName = ?, address1 = ?, address2 = ?, zipcode = ?, city = ?, state = ?, country = ?, phone = ? WHERE email = ?', (first_name, last_name, address1, address2, zipcode, city, state, country, phone, email))
+            try:
+                cur = con.cursor()
+                cur.execute(
+                    'UPDATE users SET firstName = ?, lastName = ?, address1 = ?, address2 = ?, zipcode = ?, city = ?, state = ?, country = ?, phone = ? WHERE email = ?',
+                    (first_name, last_name, address1, address2, zipcode, city, state, country, phone, email))
 
-                    con.commit()
-                    msg = "Saved Successfully"
-                except:
-                    con.rollback()
-                    msg = "Error occured"
+                con.commit()
+                msg = "Saved Successfully"
+            except:
+                con.rollback()
+                msg = "Error occured"
         con.close()
         return redirect(url_for('edit_profile'))
 
 @app.route("/loginForm")
 def login_form():
-    # Uncomment to enable logging in and registration
+
     #if 'email' in session:
         return redirect(url_for('root'))
-    #else:
-    #    return render_template('login.html', error='')
 
+
+
+
+
+# else:
+#    return render_template('login.html', error='')
 @app.route("/login", methods = ['POST', 'GET'])
 def login():
     if request.method == 'POST':
@@ -238,12 +246,15 @@ def cart():
         cur = conn.cursor()
         cur.execute("SELECT userId FROM users WHERE email = '" + email + "'")
         user_id = cur.fetchone()[0]
-        cur.execute("SELECT products.productId, products.name, products.price, products.image FROM products, kart WHERE products.productId = kart.productId AND kart.userId = " + str(user_id))
+        cur.execute(
+            "SELECT products.productId, products.name, products.price, products.image FROM products, kart WHERE products.productId = kart.productId AND kart.userId = " + str(user_id))
         products = cur.fetchall()
     total_price = 0
     for row in products:
         total_price += row[2]
-    return render_template("cart.html", products = products, totalPrice=total_price, loggedIn=logged_in, firstName=first_name, noOfItems=no_of_items)
+    return render_template("cart.html", products = products,
+totalPrice=total_price, loggedIn=logged_in,
+                           firstName=first_name, noOfItems=no_of_items)
 
 @app.route("/removeFromCart")
 def remove_from_cart():
@@ -281,7 +292,7 @@ def is_valid(email, password):
     return False
 
 
-@app.route("/checkout", methods=['GET','POST'])
+@app.route("/checkout", methods=['GET', 'POST'])
 def payment():
     if 'email' not in session:
         return redirect(url_for('login_form'))
@@ -290,7 +301,8 @@ def payment():
 
     with sqlite3.connect('database.db') as conn:
         cur = conn.cursor()
-        cur.execute("SELECT userId FROM users WHERE email = '" + email + "'")
+        cur.execute(
+            "SELECT userId FROM users WHERE email = '" + email + "'")
         user_id = cur.fetchone()[0]
         cur.execute("SELECT products.productId, products.name, products.price, products.image FROM products, kart WHERE products.productId = kart.productId AND kart.userId = " + str(user_id))
         products = cur.fetchall()
@@ -304,12 +316,14 @@ def payment():
 
         
 
-    return render_template("checkout.html", products = products, totalPrice=total_price, loggedIn=logged_in, firstName=first_name, noOfItems=no_of_items)
+    return render_template("checkout.html", products = products,
+totalPrice=total_price, loggedIn=logged_in,
+                           firstName=first_name, noOfItems=no_of_items)
 
-@app.route("/register", methods = ['GET', 'POST'])
+@app.route("/register", methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        #Parse form data    
+        # Parse form data
         password = request.form['password']
         email = request.form['email']
         first_name = request.form['firstName']
@@ -325,7 +339,10 @@ def register():
         with sqlite3.connect('database.db') as con:
             try:
                 cur = con.cursor()
-                cur.execute('INSERT INTO users (password, email, firstName, lastName, address1, address2, zipcode, city, state, country, phone) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', (hashlib.md5(password.encode()).hexdigest(), email, first_name, last_name, address1, address2, zipcode, city, state, country, phone))
+                cur.execute(
+                    'INSERT INTO users (password, email, firstName, lastName, address1, address2, zipcode, city, state, country, phone) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                (hashlib.md5(password.encode()).hexdigest(), email, first_name, last_name, address1, address2,
+                                                                                                    zipcode, city, state, country, phone))
 
                 con.commit()
 
