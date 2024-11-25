@@ -22,9 +22,11 @@ def get_login_details():
             no_of_items = 0
         else:
             logged_in = True
-            cur.execute("SELECT userId, firstName FROM users WHERE email = '" + session['email'] + "'") # Fixed user_id to userID and first_name to firstName
+            cur.execute("SELECT userId, firstName FROM users WHERE email = '" + session[
+                'email'] + "'")  # Fixed user_id & first_name to userId & firstName,
+
             user_id, first_name = cur.fetchone()
-            cur.execute("SELECT count(productId) FROM kart WHERE userId = " + str(user_id)) # Fixed user_id to userId
+            cur.execute("SELECT count(productId) FROM kart WHERE userId = " + str(user_id))  # Fixed user_id to userId,
             no_of_items = cur.fetchone()[0]
     conn.close()
     return (logged_in, first_name, no_of_items)
@@ -37,15 +39,15 @@ def root():
         cur = conn.cursor()
         # Show last product added
         cur.execute(
-            'SELECT productId, name, price, description, image, stock FROM products ORDER BY productId DESC LIMIT 1 ')
+            'SELECT productId, name, price, description, image, stock FROM products ORDER BY productId DESC  LIMIT 1')
         # Show all items
-        cur.execute('SELECT productId, name, price, description, image, stock FROM products LIMIT 1')
+        cur.execute('SELECT productId, name, price, description, image, stock FROM products ')
         item_data = cur.fetchall()
         # Show an error instead of the categories
         category_data = [(-1, "Error")]
         # Show all categories
-        cur.execute('SELECT categoryId, name FROM categories')
-        category_data = cur.fetchall()
+        cur.execute('SELECT categoryId, name FROM categories')  # hashtag in front of line
+        category_data = cur.fetchall()  # hashtag in front of line
     item_data = parse(item_data)
     return render_template('home.html', itemData=item_data, loggedIn=logged_in, firstName=first_name,
                            noOfItems=no_of_items, categoryData=category_data)
@@ -194,12 +196,11 @@ def update_profile():
 @app.route("/loginForm")
 def login_form():
     # Uncomment to enable logging in and registration
-    # if 'email' in session:
-    return redirect(url_for('root'))
+    if 'email' in session:
+        return redirect(url_for('root'))
+    else:  # Uncommented by Yeab 1/18/2023
+        return render_template('login.html', error='')
 
-
-# else:
-#    return render_template('login.html', error='')
 
 @app.route("/login", methods=['POST', 'GET'])
 def login():
@@ -326,7 +327,7 @@ def payment():
     total_price = 0
     for row in products:
         total_price += row[2]
-        print(row)
+        #  print(row)
         cur.execute("INSERT INTO Orders (userId, productId) VALUES (?, ?)", (user_id, row[0]))
     cur.execute("DELETE FROM kart WHERE userId = " + str(user_id))
     conn.commit()
