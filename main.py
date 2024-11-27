@@ -23,10 +23,10 @@ def get_login_details():
         else:
             logged_in = True
             cur.execute("SELECT userId, firstName FROM users WHERE email = '" + session[
-                'email'] + "'")  # Fixed user_id & first_name to userId & firstName,
+                'email'] + "'")  # Elmi A. fixed user_id & first_name to userId & firstName
 
             user_id, first_name = cur.fetchone()
-            cur.execute("SELECT count(productId) FROM kart WHERE userId = " + str(user_id))  # Fixed user_id to userId,
+            cur.execute("SELECT count(productId) FROM kart WHERE userId = " + str(user_id))  # Elmi A. fixed user_id to userId
             no_of_items = cur.fetchone()[0]
     conn.close()
     return (logged_in, first_name, no_of_items)
@@ -46,8 +46,8 @@ def root():
         # Show an error instead of the categories
         category_data = [(-1, "Error")]
         # Show all categories
-        cur.execute('SELECT categoryId, name FROM categories')  # hashtag in front of line
-        category_data = cur.fetchall()  # hashtag in front of line
+        cur.execute('SELECT categoryId, name FROM categories')  # Tim N. removed hashtag in front of line
+        category_data = cur.fetchall()  # Tim N. removed hashtag in front of line
     item_data = parse(item_data)
     return render_template('home.html', itemData=item_data, loggedIn=logged_in, firstName=first_name,
                            noOfItems=no_of_items, categoryData=category_data)
@@ -198,7 +198,7 @@ def login_form():
     # Uncomment to enable logging in and registration
     if 'email' in session:
         return redirect(url_for('root'))
-    else:  # Uncommented by Yeab 1/18/2023
+    else:  # Elmi A fix login registration
         return render_template('login.html', error='')
 
 
