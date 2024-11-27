@@ -195,7 +195,7 @@ def update_profile():
 
 @app.route("/loginForm")
 def login_form():
-    # Elmi A.  to enable logging in and registration
+    # Elmi A. fix to enable logging in and registration
     if 'email' in session:
         return redirect(url_for('root'))
     else:  # Elmi A. fix login registration
